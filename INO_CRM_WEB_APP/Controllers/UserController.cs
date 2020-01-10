@@ -1,63 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using INO_CRM_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace INO_CRM_WEB_APP.Controllers
 {
     public class UserController : Controller
     {
-        // GET: User
-        public ActionResult Index()
+        private readonly ILogger<UserController> _logger;
+
+        public UserController(ILogger<UserController> logger)
         {
-            return View();
+            _logger = logger;
         }
+
+        public async Task<UserModel> GetUserAsync(int id)
+        {
+            string apiUrl = "http://localhost:50060/";
+            UserModel user = new UserModel();
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpResponseMessage responseMessage = await client.GetAsync("api/users/" + id);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                    user = JsonConvert.DeserializeObject<UserModel>(userResponse);
+                }
+
+            }
+
+            return user;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            string apiUrl = "http://localhost:50060/";
+            List<UserModel> users = new List<UserModel>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpResponseMessage responseMessage = await client.GetAsync("api/users");
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                    users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
+                }
+
+            }
+
+            return View(users);
+        }
+        
 
         // GET: User/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
-        }
-
-        // GET: User/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: User/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            UserModel user = await GetUserAsync(id);
+            return View(user);
         }
 
         // GET: User/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            UserModel user = await GetUserAsync(id);
+            return View(user);
         }
 
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> EditUser(int id, UserModel user)
         {
+            user.UserId = id;
             try
             {
-                // TODO: Add update logic here
+                string apiUrl = "http://localhost:50060/";
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpResponseMessage responseMessage = await client.PutAsJsonAsync("api/users/" + id, user);
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -68,19 +112,28 @@ namespace INO_CRM_WEB_APP.Controllers
         }
 
         // GET: User/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            UserModel user = await GetUserAsync(id);
+            return View(user);
         }
 
         // POST: User/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteUser(int id)
         {
             try
             {
-                // TODO: Add delete logic here
+                string apiUrl = "http://localhost:50060/";                
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpResponseMessage responseMessage = await client.DeleteAsync("api/users/" + id);
+                }
 
                 return RedirectToAction(nameof(Index));
             }

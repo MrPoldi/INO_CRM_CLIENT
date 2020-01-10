@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using INO_CRM_API.Models;
@@ -41,7 +42,7 @@ namespace INO_CRM_WEB_APP.Controllers
             JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
 
 
-            return Content($"Hello {user.Login} {user.Password} {token} {jwtToken.Issuer} {jwtToken.Audiences.ToArray()[0]}");
+            return Content($"Hello {user.Login} {user.Password} {token} {jwtToken.Issuer} {jwtToken.Audiences.ToArray()[0]} {jwtToken.Claims.First(x => x.Type.ToString().Equals(ClaimTypes.Role)).Value}");
         }
     }
 }
