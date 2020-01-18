@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using INO_CRM_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace INO_CRM_WEB_APP.Controllers
 {
@@ -22,7 +23,7 @@ namespace INO_CRM_WEB_APP.Controllers
         
         public async Task<IActionResult> Login(UserModel user)
         {
-            string token ="Bad token";            
+            string token = "";            
             string apiUrl = "http://localhost:50060/";
             HttpClient client = new HttpClient();
 
@@ -35,14 +36,25 @@ namespace INO_CRM_WEB_APP.Controllers
             {
                 token = response.Content.ReadAsStringAsync().Result;
             }
-            token = token.Remove(token.Length - 1);
-            token = token.Substring(1);
-            //string uToken = Regex.Unescape(token);
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
 
+            if(token != "")
+            {
+                token = token.Remove(token.Length - 1);
+                token = token.Substring(1);
+                //string uToken = Regex.Unescape(token);
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
 
-            return Content($"Hello {user.Login} {user.Password} {token} {jwtToken.Issuer} {jwtToken.Audiences.ToArray()[0]} {jwtToken.Claims.First(x => x.Type.ToString().Equals(ClaimTypes.Role)).Value}");
+                HttpContext.Session.SetString("login", jwtToken.Audiences.ToArray()[0]);
+                HttpContext.Session.SetString("token", token);
+
+                return Content($"Hello {user.Login} {user.Password} {token} {jwtToken.Issuer} {HttpContext.Session.GetString("login")} {jwtToken.Claims.First(x => x.Type.ToString().Equals(ClaimTypes.Role)).Value}");
+            }
+            else
+            {
+                ViewBag.LoginError = "Bad username or password";
+                return View("Index");
+            }
         }
     }
 }
