@@ -1,0 +1,95 @@
+﻿@model IEnumerable<INO_CRM_API.Models.UserModel>
+
+@{
+    ViewData["Title"] = "Users paginated";
+}
+
+<h1>Users paginated</h1>
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.dateOfBirth)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Login)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Password)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RoleId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsDeleted)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.dateOfBirth)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Login)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Password)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RoleId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsDeleted)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.UserId }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.UserId }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.UserId })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <ul class="pagination">
+            @if (ViewBag.currentPage > 1)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage-1)">Previous</a></li>
+            }
+
+            @for (int i = 0; i < ViewBag.pageCount; i++)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a></li>
+            }
+            @if (ViewBag.currentPage < ViewBag.pageCount)
+            {
+                <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)">Next</a></li>
+            }
+            
+        </ul>
+    </div>
+</div>

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace INO_CRM_WEB_APP.Controllers
 {
@@ -67,6 +68,39 @@ namespace INO_CRM_WEB_APP.Controllers
 
             }
 
+            return View(users);
+        }
+
+        public async Task<IActionResult> Page(int id)
+        {
+            string apiUrl = "http://localhost:50060/";
+            List<UserModel> users = new List<UserModel>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpResponseMessage responseMessage = await client.GetAsync("api/users/page/" + id);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                    users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
+                }
+
+                responseMessage = await client.GetAsync("api/users/pages");
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                    int pageCount = int.Parse(userResponse);
+                    ViewBag.pageCount = pageCount;
+                }
+
+            }
+
+            ViewBag.currentPage = id;
             return View(users);
         }
         
