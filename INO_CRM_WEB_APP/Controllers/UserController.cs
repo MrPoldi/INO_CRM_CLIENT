@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using INO_CRM_API.Models;
+using INO_CRM_WEB_APP.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,79 +26,56 @@ namespace INO_CRM_WEB_APP.Controllers
 
         public async Task<UserModel> GetUserAsync(int id)
         {
-            string apiUrl = "http://localhost:50060/";
             UserModel user = new UserModel();
 
-            using (HttpClient client = new HttpClient())
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/" + id);
+
+            if (responseMessage.IsSuccessStatusCode)
             {
-                client.BaseAddress = new Uri(apiUrl);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HttpResponseMessage responseMessage = await client.GetAsync("api/users/" + id);
-
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
-                    user = JsonConvert.DeserializeObject<UserModel>(userResponse);
-                }
-
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                user = JsonConvert.DeserializeObject<UserModel>(userResponse);
             }
-
+            
             return user;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<List<UserModel>> GetUsersAsync(bool paginated, int id = 0)
         {
-            string apiUrl = "http://localhost:50060/";
             List<UserModel> users = new List<UserModel>();
-
-            using (HttpClient client = new HttpClient())
+            HttpResponseMessage responseMessage;
+            if (!paginated)
             {
-                client.BaseAddress = new Uri(apiUrl);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HttpResponseMessage responseMessage = await client.GetAsync("api/users");
-
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
-                    users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
-                }
-
+                responseMessage = await ApiHelper.GetAsync("api/users");
             }
+            else
+            {
+                responseMessage = await ApiHelper.GetAsync("api/users/page/" + id);
+            }
+           
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
+            }
+            return users;
+        }
 
+        public async Task<IActionResult> Index()
+        {           
+            List<UserModel> users = await GetUsersAsync(paginated:false); 
             return View(users);
         }
 
         public async Task<IActionResult> Page(int id)
         {
-            string apiUrl = "http://localhost:50060/";
-            List<UserModel> users = new List<UserModel>();
+            List<UserModel> users = await GetUsersAsync(true, id);
 
-            using (HttpClient client = new HttpClient())
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/pages");
+            if (responseMessage.IsSuccessStatusCode)
             {
-                client.BaseAddress = new Uri(apiUrl);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HttpResponseMessage responseMessage = await client.GetAsync("api/users/page/" + id);
-
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
-                    users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
-                }
-
-                responseMessage = await client.GetAsync("api/users/pages");
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
-                    int pageCount = int.Parse(userResponse);
-                    ViewBag.pageCount = pageCount;
-                }
-
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                int pageCount = int.Parse(userResponse);
+                ViewBag.pageCount = pageCount;
             }
 
             ViewBag.currentPage = id;

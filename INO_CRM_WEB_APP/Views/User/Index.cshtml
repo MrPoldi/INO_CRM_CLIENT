@@ -75,12 +75,12 @@
                             @{string role = httpContextAccessor.HttpContext.Session.GetString("role");}
                             @if (role == "Admin" || role == "Moderator")
                             {
-                                @Html.ActionLink("Edit", "Edit", new { id = item.UserId });@:|
+                                @Html.ActionLink("Edit", "Edit", new { id = item.UserId });@:| 
                             }
                             @Html.ActionLink("Details", "Details", new { id = item.UserId })
                             @if (role == "Admin")
                             {
-                                @:|
+                                @:| 
                                 @Html.ActionLink("Delete", "Delete", new { id = item.UserId });
                             }
                         </td>
