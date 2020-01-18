@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<INO_CRM_API.Models.UserModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
 
 @{
     ViewData["Title"] = "Users paginated";
@@ -67,9 +69,17 @@
                             @Html.DisplayFor(modelItem => item.IsDeleted)
                         </td>
                         <td>
-                            @Html.ActionLink("Edit", "Edit", new { id = item.UserId }) |
-                            @Html.ActionLink("Details", "Details", new { id = item.UserId }) |
-                            @Html.ActionLink("Delete", "Delete", new { id = item.UserId })
+                            @{string role = httpContextAccessor.HttpContext.Session.GetString("role");}
+                            @if (role == "Admin" || role == "Moderator")
+                            {
+                                @Html.ActionLink("Edit", "Edit", new { id = item.UserId });@:| 
+                            }
+                            @Html.ActionLink("Details", "Details", new { id = item.UserId }) 
+                            @if (role == "Admin")
+                            {
+                                @:| 
+                                @Html.ActionLink("Delete", "Delete", new { id = item.UserId });
+                            }
                         </td>
                     </tr>
                 }
@@ -89,7 +99,7 @@
             {
                 <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)">Next</a></li>
             }
-            
+
         </ul>
     </div>
 </div>

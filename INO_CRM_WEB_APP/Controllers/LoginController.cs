@@ -47,6 +47,8 @@ namespace INO_CRM_WEB_APP.Controllers
 
                 HttpContext.Session.SetString("login", jwtToken.Audiences.ToArray()[0]);
                 HttpContext.Session.SetString("token", token);
+                HttpContext.Session.SetString("role", jwtToken.Claims.First(x => x.Type.ToString().Equals(ClaimTypes.Role)).Value);
+                
 
                 return Content($"Hello {user.Login} {user.Password} {token} {jwtToken.Issuer} {HttpContext.Session.GetString("login")} {jwtToken.Claims.First(x => x.Type.ToString().Equals(ClaimTypes.Role)).Value}");
             }

@@ -20,15 +20,18 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
-                        </li>
+                        @if (httpContextAccessor.HttpContext.Session.GetString("token") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
                         </li>
@@ -38,7 +41,7 @@
                         <li class="nav-item">
                             @if (@httpContextAccessor.HttpContext.Session.GetString("login") != null)
                             {
-                                @:Welcome, @httpContextAccessor.HttpContext.Session.GetString("login")
+                                @:Welcome, @httpContextAccessor.HttpContext.Session.GetString("login").  Your role is @httpContextAccessor.HttpContext.Session.GetString("role")
                             }
 
                         </li>
@@ -49,7 +52,19 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()
+            @{
+                string controller = Html.ViewContext.RouteData.Values["controller"].ToString();
+                string token = httpContextAccessor.HttpContext.Session.GetString("token");
+            }
+            @if (controller == "Login" || controller == "Register" || token != null)
+            {                
+                @RenderBody();
+            }
+            else
+            {
+                IgnoreBody();
+                @:You need to login first.
+            }
         </main>
     </div>
 
