@@ -28,7 +28,7 @@ namespace INO_CRM_WEB_APP.Controllers
         {
             UserModel user = new UserModel();
 
-            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/" + id);
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/" + id, HttpContext.Session.GetString("token"));
 
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -45,11 +45,11 @@ namespace INO_CRM_WEB_APP.Controllers
             HttpResponseMessage responseMessage;
             if (!paginated)
             {
-                responseMessage = await ApiHelper.GetAsync("api/users");
+                responseMessage = await ApiHelper.GetAsync("api/users", HttpContext.Session.GetString("token"));
             }
             else
             {
-                responseMessage = await ApiHelper.GetAsync("api/users/page/" + id);
+                responseMessage = await ApiHelper.GetAsync("api/users/page/" + id, HttpContext.Session.GetString("token"));
             }
            
             if (responseMessage.IsSuccessStatusCode)
@@ -70,7 +70,7 @@ namespace INO_CRM_WEB_APP.Controllers
         {
             List<UserModel> users = await GetUsersAsync(true, id);
 
-            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/pages");
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/pages", HttpContext.Session.GetString("token"));
             if (responseMessage.IsSuccessStatusCode)
             {
                 string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
@@ -105,16 +105,8 @@ namespace INO_CRM_WEB_APP.Controllers
             user.UserId = id;
             try
             {
-                string apiUrl = "http://localhost:50060/";
-                using (HttpClient client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage responseMessage = await client.PutAsJsonAsync("api/users/" + id, user);
-                }
-
+                HttpResponseMessage responseMessage = await ApiHelper.PutAsync("api/users/" + id, user, HttpContext.Session.GetString("token"));
+                
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -137,16 +129,8 @@ namespace INO_CRM_WEB_APP.Controllers
         {
             try
             {
-                string apiUrl = "http://localhost:50060/";                
-                using (HttpClient client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage responseMessage = await client.DeleteAsync("api/users/" + id);
-                }
-
+                HttpResponseMessage responseMessage = await ApiHelper.DeleteAsync("api/users/" + id, HttpContext.Session.GetString("token"));
+                
                 return RedirectToAction(nameof(Index));
             }
             catch

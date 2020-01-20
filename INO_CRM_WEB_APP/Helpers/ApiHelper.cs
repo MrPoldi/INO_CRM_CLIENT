@@ -21,9 +21,31 @@ namespace INO_CRM_WEB_APP.Helpers
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async static Task<HttpResponseMessage> GetAsync(string route)
+        public async static Task<HttpResponseMessage> GetAsync(string route, string accessToken = "")
         {
+            if(accessToken != "")
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
             return await client.GetAsync(route);
+        }
+
+        public async static Task<HttpResponseMessage> PutAsync(string route, object obj, string accessToken = "")
+        {
+            if (accessToken != "")
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
+            return await client.PutAsJsonAsync(route, obj);
+        }
+
+        public async static Task<HttpResponseMessage> DeleteAsync(string route, string accessToken = "")
+        {
+            if (accessToken != "")
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
+            return await client.DeleteAsync(route);
         }
     }
 }
