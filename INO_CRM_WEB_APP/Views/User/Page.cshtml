@@ -95,6 +95,7 @@
             {
                 <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a></li>
             }
+
             @if (ViewBag.currentPage < ViewBag.pageCount)
             {
                 <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)">Next</a></li>

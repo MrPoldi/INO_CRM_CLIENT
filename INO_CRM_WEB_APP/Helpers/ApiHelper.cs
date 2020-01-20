@@ -30,6 +30,15 @@ namespace INO_CRM_WEB_APP.Helpers
             return await client.GetAsync(route);
         }
 
+        public async static Task<HttpResponseMessage> PostAsync(string route, object obj, string accessToken = "")
+        {
+            if (accessToken != "")
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
+            return await client.PostAsJsonAsync(route, obj);
+        }
+
         public async static Task<HttpResponseMessage> PutAsync(string route, object obj, string accessToken = "")
         {
             if (accessToken != "")

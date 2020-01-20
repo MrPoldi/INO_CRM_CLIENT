@@ -1,45 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using INO_CRM_API.Models;
+using INO_CRM_WEB_APP.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace INO_CRM_WEB_APP.Controllers
 {
     public class CompanyController : Controller
     {
-        public async Task<List<UserModel>> GetUsersAsync(bool paginated, int id = 0)
+        public async Task<CompanyModel> GetCompanyAsync(int id)
         {
-            List<UserModel> users = new List<UserModel>();
+            CompanyModel company = new CompanyModel();
+
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/companies/" + id, HttpContext.Session.GetString("token"));
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                company = JsonConvert.DeserializeObject<CompanyModel>(userResponse);
+            }
+
+            return company;
+        }
+
+        public async Task<List<CompanyModel>> GetCompaniesAsync(bool paginated, int id = 0)
+        {
+            List<CompanyModel> companies = new List<CompanyModel>();
             HttpResponseMessage responseMessage;
             if (!paginated)
             {
-                responseMessage = await ApiHelper.GetAsync("api/users", HttpContext.Session.GetString("token"));
+                responseMessage = await ApiHelper.GetAsync("api/companies", HttpContext.Session.GetString("token"));
             }
             else
             {
-                responseMessage = await ApiHelper.GetAsync("api/users/page/" + id, HttpContext.Session.GetString("token"));
+                responseMessage = await ApiHelper.GetAsync("api/companies/page/" + id, HttpContext.Session.GetString("token"));
             }
 
             if (responseMessage.IsSuccessStatusCode)
             {
                 string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
-                users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
+                companies = JsonConvert.DeserializeObject<List<CompanyModel>>(userResponse);
             }
-            return users;
+            return companies;
         }
 
         // GET: Company
-        public ActionResult Index()
+        public async  Task<ActionResult> Index()
         {
-            return View();
+            List<CompanyModel> companies = await GetCompaniesAsync(paginated: false);
+            return View(companies);
+        }
+
+        public async Task<ActionResult> Page(int id)
+        {
+            List<CompanyModel> companies = await GetCompaniesAsync(true, id);
+
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/companies/pages", HttpContext.Session.GetString("token"));
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                int pageCount = int.Parse(userResponse);
+                ViewBag.pageCount = pageCount;
+            }
+
+            ViewBag.currentPage = id;
+            return View(companies);
         }
 
         // GET: Company/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            CompanyModel company = await GetCompanyAsync(id);
+            return View(company);
         }
 
         // GET: Company/Create
@@ -51,11 +88,14 @@ namespace INO_CRM_WEB_APP.Controllers
         // POST: Company/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> CreateCompany(CompanyModel company)
         {
+            company.User = new UserModel();
+            company.User.Login = HttpContext.Session.GetString("login");
+
             try
             {
-                // TODO: Add insert logic here
+                HttpResponseMessage response = await ApiHelper.PostAsync("api/companies", company);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -66,19 +106,21 @@ namespace INO_CRM_WEB_APP.Controllers
         }
 
         // GET: Company/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            CompanyModel company = await GetCompanyAsync(id);
+            return View(company);
         }
 
         // POST: Company/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> EditCompany(int id, CompanyModel company)
         {
+            company.CompanyId = id;            
             try
             {
-                // TODO: Add update logic here
+                HttpResponseMessage responseMessage = await ApiHelper.PutAsync("api/companies/" + id, company, HttpContext.Session.GetString("token"));
 
                 return RedirectToAction(nameof(Index));
             }
@@ -89,19 +131,20 @@ namespace INO_CRM_WEB_APP.Controllers
         }
 
         // GET: Company/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            CompanyModel company = await GetCompanyAsync(id);
+            return View(company);
         }
 
         // POST: Company/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteCompany(int id)
         {
             try
             {
-                // TODO: Add delete logic here
+                HttpResponseMessage responseMessage = await ApiHelper.DeleteAsync("api/companies/" + id, HttpContext.Session.GetString("token"));
 
                 return RedirectToAction(nameof(Index));
             }

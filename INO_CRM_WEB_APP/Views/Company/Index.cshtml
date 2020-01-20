@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<INO_CRM_API.Models.CompanyModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
 
 @{
     ViewData["Title"] = "Index";
@@ -7,7 +9,11 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @{string role = httpContextAccessor.HttpContext.Session.GetString("role");}
+    @if (role == "Admin" || role == "Moderator")
+    {
+        <a asp-action="Create">Create New</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -67,9 +73,16 @@
                 @Html.DisplayFor(modelItem => item.IsDeleted)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @if (role == "Admin" || role == "Moderator")
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.CompanyId });@:| 
+                }
+                @Html.ActionLink("Details", "Details", new { id = item.CompanyId })
+                @if (role == "Admin")
+                {
+                    @:| 
+                    @Html.ActionLink("Delete", "Delete", new { id = item.CompanyId });
+                }
             </td>
         </tr>
 }
