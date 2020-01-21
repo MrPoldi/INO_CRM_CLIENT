@@ -1,0 +1,54 @@
+﻿@model IEnumerable<INO_CRM_API.Models.TradeNoteModel>
+
+@{
+    ViewData["Title"] = "CompanyNotes";
+}
+
+<h1>Trade notes</h1>
+
+<p>
+    <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
+    
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NoteId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>            
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoteId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>            
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.NoteId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.NoteId }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.NoteId })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

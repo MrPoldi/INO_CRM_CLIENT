@@ -60,7 +60,7 @@
         </dd>
     </dl>
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+<div>    
     <a asp-action="Index">Back to List</a>
+    <a asp-controller="TradeNote" asp-action="CompanyNotes" asp-route-id="@Model.CompanyId">Notes for this company</a>
 </div>

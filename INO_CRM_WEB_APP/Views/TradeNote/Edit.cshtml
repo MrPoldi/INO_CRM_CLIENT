@@ -1,0 +1,36 @@
+﻿@model INO_CRM_API.Models.TradeNoteModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>TradeNoteModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditNote" asp-route-id="@Model.NoteId" asp-route-companyId="@Model.CompanyId">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control" ></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Company.Name" class="control-label"></label>
+                <input asp-for="Company.Name" class="form-control" />
+                <span asp-validation-for="Company.Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="CompanyNotes" asp-route-id="@Model.CompanyId">Back to List</a>
+</div>
+
