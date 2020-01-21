@@ -17,7 +17,7 @@ namespace INO_CRM_WEB_APP.Controllers
         private async Task<List<TradeNoteModel>> GetNotesAsync(int id)
         {
             List<TradeNoteModel> notes = new List<TradeNoteModel>();
-            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/tradenotes/company/" + id);
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/tradenotes/company/" + id, HttpContext.Session.GetString("token"));
 
             if (responseMessage.IsSuccessStatusCode)
             {

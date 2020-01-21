@@ -60,7 +60,8 @@
         </dd>
     </dl>
 </div>
-<div>    
-    <a asp-action="Index">Back to List</a>
-    <a asp-controller="TradeNote" asp-action="CompanyNotes" asp-route-id="@Model.CompanyId">Notes for this company</a>
+<div>
+    <a asp-action="Index">Back to List</a><br />
+    <a asp-controller="TradeNote" asp-action="CompanyNotes" asp-route-id="@Model.CompanyId">Trade notes</a><br />
+    <a asp-controller="Contact" asp-action="CompanyContacts" asp-route-id="@Model.CompanyId">Contact people</a>
 </div>

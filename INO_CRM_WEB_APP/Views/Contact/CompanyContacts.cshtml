@@ -1,0 +1,88 @@
+﻿@model IEnumerable<INO_CRM_API.Models.ContactPersonModel>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+
+@{
+    ViewData["Title"] = "CompanyContacts";
+}
+@{string role = httpContextAccessor.HttpContext.Session.GetString("role");}
+
+<h1>Company Contacts</h1>
+
+<p>
+    <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th>
+                Added by user
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContactId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Position)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Login)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                </td>
+                <td>
+                    @if (role == "Admin" || role == "Moderator")
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ContactId });@:| 
+                    }
+                    @Html.ActionLink("Details", "Details", new { id = item.ContactId })
+                    @if (role == "Admin")
+                    {
+                        @:| 
+                        @Html.ActionLink("Delete", "Delete", new { id = item.ContactId });
+                    }                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
