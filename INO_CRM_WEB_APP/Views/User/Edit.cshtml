@@ -1,5 +1,8 @@
 ﻿@model INO_CRM_API.Models.UserModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
 
+@{string role = httpContextAccessor.HttpContext.Session.GetString("role");}
 @{
     ViewData["Title"] = "Edit";
 }
@@ -11,10 +14,10 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditUser" asp-route-id="@Model.UserId">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control"/>
+                <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -37,11 +40,16 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="RoleId" class="control-label"></label>
-                <input asp-for="RoleId" class="form-control" />
-                <span asp-validation-for="RoleId" class="text-danger"></span>
-            </div>            
+            @if (role == "Admin")
+            {
+        <div class="form-group">
+            <label asp-for="Role.Name" class="control-label">Role</label>            
+            <label><input asp-for="Role.Name" value="Admin" type="radio" />Admin</label>
+            <label><input asp-for="Role.Name" value="Moderator" type="radio" />Moderator</label>
+            <label><input asp-for="Role.Name" value="User" type="radio" />User</label>
+            <span asp-validation-for="Role.Name" class="text-danger"></span>
+        </div>
+            }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -50,6 +58,6 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Page" asp-route-id="1">Back to List</a>
 </div>
 

@@ -107,7 +107,7 @@ namespace INO_CRM_WEB_APP.Controllers
             {
                 HttpResponseMessage responseMessage = await ApiHelper.PutAsync("api/users/" + id, user, HttpContext.Session.GetString("token"));
                 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Page), new { id = 1});
             }
             catch
             {
@@ -131,7 +131,7 @@ namespace INO_CRM_WEB_APP.Controllers
             {
                 HttpResponseMessage responseMessage = await ApiHelper.DeleteAsync("api/users/" + id, HttpContext.Session.GetString("token"));
                 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Page), new { id = 1 });
             }
             catch
             {

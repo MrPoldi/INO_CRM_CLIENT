@@ -28,7 +28,7 @@
                 @Html.DisplayNameFor(model => model.NIP)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BranchId)
+                Branch
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Address)
@@ -37,7 +37,7 @@
                 @Html.DisplayNameFor(model => model.City)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserId)
+                Added by user
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsDeleted)
@@ -59,7 +59,7 @@
                     @Html.DisplayFor(modelItem => item.NIP)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.BranchId)
+                    @Html.DisplayFor(modelItem => item.Branch.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Address)
@@ -68,7 +68,7 @@
                     @Html.DisplayFor(modelItem => item.City)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserId)
+                    @Html.DisplayFor(modelItem => item.User.Login)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.IsDeleted)
@@ -92,17 +92,23 @@
 <ul class="pagination">
     @if (ViewBag.currentPage > 1)
     {
-        <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage-1)">Previous</a></li>
+        <li class="page-item">
+            <a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage-1)">Previous</a>
+        </li>
     }
     
     @for (int i = 0; i < ViewBag.pageCount; i++)
     {
-        <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a></li>
+        <li class="page-item">
+            <a class="page-link @(i+1 == ViewBag.currentPage ? "active" : "")" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a>
+        </li>
     }
 
     @if (ViewBag.currentPage < ViewBag.pageCount)
     {
-        <li class="page-item"><a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)">Next</a></li>
+        <li class="page-item">
+            <a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)">Next</a>
+        </li>
     }
 
 </ul>

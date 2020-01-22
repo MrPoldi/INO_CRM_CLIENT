@@ -34,7 +34,7 @@ namespace INO_CRM_WEB_APP.Controllers
                 
             } 
 
-            return Content($"Registered user: {user.Login} with pass: {user.Password}");
+            return RedirectToAction("Index", "Login"); ;
         }
     }
 }
