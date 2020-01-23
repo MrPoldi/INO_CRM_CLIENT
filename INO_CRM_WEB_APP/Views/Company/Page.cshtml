@@ -99,8 +99,8 @@
     
     @for (int i = 0; i < ViewBag.pageCount; i++)
     {
-        <li class="page-item">
-            <a class="page-link @(i+1 == ViewBag.currentPage ? "active" : "")" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a>
+        <li class="page-item @(i+1 == ViewBag.currentPage ? "active" : "")">
+            <a class="page-link" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a>
         </li>
     }
 

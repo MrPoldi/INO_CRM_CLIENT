@@ -8,6 +8,13 @@
 
 <h1>Users paginated</h1>
 
+<form asp-controller="User" asp-action="Page" asp-route-id="1">
+    <p>
+        Last name: <input type="text" name="searchName">
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
 <div class="form-horizontal">
     <div class="form-group">
         <table class="table table-responsive">

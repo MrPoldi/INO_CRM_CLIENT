@@ -60,15 +60,39 @@ namespace INO_CRM_WEB_APP.Controllers
             return users;
         }
 
+        public async Task<List<UserModel>> GetUsersByName(string searchName)
+        {
+            List<UserModel> users = new List<UserModel>();
+            HttpResponseMessage response;
+            response = await ApiHelper.GetAsync("api/users/page/1?searchName=" + searchName, HttpContext.Session.GetString("token"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                string userResponse = response.Content.ReadAsStringAsync().Result;
+                users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
+            }
+            return users;
+        }
+
         public async Task<IActionResult> Index()
         {           
             List<UserModel> users = await GetUsersAsync(paginated:false); 
             return View(users);
         }
 
-        public async Task<IActionResult> Page(int id)
+        public async Task<IActionResult> Page(int id, string searchName)
         {
-            List<UserModel> users = await GetUsersAsync(true, id);
+            List<UserModel> users;
+            if (searchName == null){
+                users = await GetUsersAsync(true, id);
+                ViewBag.currentPage = id;
+            }
+            else
+            {
+                users = await GetUsersByName(searchName);
+                ViewBag.currentPage = 1;
+            }
+            
 
             HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/pages", HttpContext.Session.GetString("token"));
             if (responseMessage.IsSuccessStatusCode)
@@ -78,7 +102,7 @@ namespace INO_CRM_WEB_APP.Controllers
                 ViewBag.pageCount = pageCount;
             }
 
-            ViewBag.currentPage = id;
+            
             return View(users);
         }
         
