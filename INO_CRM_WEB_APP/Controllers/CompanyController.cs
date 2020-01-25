@@ -49,6 +49,44 @@ namespace INO_CRM_WEB_APP.Controllers
             return companies;
         }
 
+        public async Task<List<CompanyModel>> GetCompaniesByBranch(int id, string searchBranch)
+        {
+            List<CompanyModel> companies = new List<CompanyModel>();
+            HttpResponseMessage response;
+            response = await ApiHelper.GetAsync("api/companies/page/" + id + "?searchBranch=" + searchBranch, HttpContext.Session.GetString("token"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                string userResponse = response.Content.ReadAsStringAsync().Result;
+                companies = JsonConvert.DeserializeObject<List<CompanyModel>>(userResponse);
+            }
+            return companies;
+        }
+
+        public async Task<int> GetPageCount()
+        {
+            int pageCount = 0;
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/companies/pages", HttpContext.Session.GetString("token"));
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                pageCount = int.Parse(userResponse);                
+            }
+            return pageCount;
+        }
+
+        public async Task<int> GetPageCountFiltered(string searchBranch)
+        {
+            int pageCount = 0;
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/companies/pages?searchBranch=" + searchBranch, HttpContext.Session.GetString("token"));
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
+                pageCount = int.Parse(userResponse);
+            }
+            return pageCount;
+        }
+
         // GET: Company
         public async  Task<ActionResult> Index()
         {
@@ -56,19 +94,34 @@ namespace INO_CRM_WEB_APP.Controllers
             return View(companies);
         }
 
-        public async Task<ActionResult> Page(int id)
+        public async Task<ActionResult> Page(int id, string searchBranch)
         {
-            List<CompanyModel> companies = await GetCompaniesAsync(true, id);
+            List<CompanyModel> companies;
+            int pageCount;
 
-            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/companies/pages", HttpContext.Session.GetString("token"));
-            if (responseMessage.IsSuccessStatusCode)
+            if(searchBranch == null)
             {
-                string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
-                int pageCount = int.Parse(userResponse);
-                ViewBag.pageCount = pageCount;
+                companies = await GetCompaniesAsync(true, id);
+                pageCount = await GetPageCount();                
+            }
+            else
+            {
+                companies = await GetCompaniesByBranch(id, searchBranch);
+                pageCount = await GetPageCountFiltered(searchBranch);
             }
 
-            ViewBag.currentPage = id;
+            if(pageCount < id)
+            {
+                ViewBag.currentPage = pageCount;
+            }
+            else
+            {
+                ViewBag.currentPage = id;
+            }
+
+            ViewBag.searchBranch = searchBranch;
+            ViewBag.pageCount = pageCount;
+            
             return View(companies);
         }
 

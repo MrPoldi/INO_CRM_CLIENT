@@ -8,6 +8,13 @@
 
 <h1>Page</h1>
 
+<form asp-controller="Company" asp-action="Page" asp-route-id="@ViewBag.currentPage">
+    <p>
+        Last name: <input type="text" name="searchBranch" value="@ViewBag.searchBranch">
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
 <p>
     @{string role = httpContextAccessor.HttpContext.Session.GetString("role");}
     @if (role == "Admin" || role == "Moderator")
@@ -93,21 +100,21 @@
     @if (ViewBag.currentPage > 1)
     {
         <li class="page-item">
-            <a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage-1)">Previous</a>
+            <a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage-1)" asp-route-searchBranch="@ViewBag.searchBranch">Previous</a>
         </li>
     }
     
     @for (int i = 0; i < ViewBag.pageCount; i++)
     {
         <li class="page-item @(i+1 == ViewBag.currentPage ? "active" : "")">
-            <a class="page-link" asp-action="Page" asp-route-id="@(i+1)">@(i + 1)</a>
+            <a class="page-link" asp-action="Page" asp-route-id="@(i+1)" asp-route-searchBranch="@ViewBag.searchBranch">@(i + 1)</a>
         </li>
     }
 
     @if (ViewBag.currentPage < ViewBag.pageCount)
     {
         <li class="page-item">
-            <a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)">Next</a>
+            <a class="page-link" asp-action="Page" asp-route-id="@(ViewBag.currentPage+1)" asp-route-searchBranch="@ViewBag.searchBranch">Next</a>
         </li>
     }
 
