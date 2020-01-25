@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\INO_CRM\INO_CRM_MODELS\INO_CRM_MODELS.csproj" />
+    <ProjectReference Include="..\..\INO_CRM_SERVER\INO_CRM_MODELS\INO_CRM_MODELS.csproj" />
   </ItemGroup>
 
 </Project>

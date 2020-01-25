@@ -42,16 +42,40 @@ namespace INO_CRM_WEB_APP.Controllers
             return contact;
         }
 
+        public async Task<List<ContactPersonModel>> GetContactsByName(int id, string searchName)
+        {
+            List<ContactPersonModel> contacts = new List<ContactPersonModel>();
+            HttpResponseMessage response;
+            response = await ApiHelper.GetAsync("api/contacts/company/"+ id + "?searchName=" + searchName, HttpContext.Session.GetString("token"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                string userResponse = response.Content.ReadAsStringAsync().Result;
+                contacts = JsonConvert.DeserializeObject<List<ContactPersonModel>>(userResponse);
+            }
+            return contacts;
+        }
+
         // GET: Contact
         public ActionResult Index()
         {
             return View();
         }
 
-        public async Task<ActionResult> CompanyContacts(int id)
+        public async Task<ActionResult> CompanyContacts(int id, string searchName)
         {
-            List<ContactPersonModel> contacts = await GetContactsAsync(id);
+            List<ContactPersonModel> contacts;
+            if (searchName == null)
+            {
+                contacts = await GetContactsAsync(id);
+            }
+            else
+            {
+                contacts = await GetContactsByName(id, searchName);
+            }
+            
             ViewBag.companyId = id;
+            ViewBag.searchName = searchName;
             return View(contacts);
         }
 

@@ -9,6 +9,13 @@
 
 <h1>Company Contacts</h1>
 
+<form asp-controller="Contact" asp-action="CompanyContacts" asp-route-id="@ViewBag.companyId">
+    <p>
+        Last name: <input type="text" name="searchName" value="@ViewBag.searchName">
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
 <p>
     <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
 </p>
