@@ -74,31 +74,66 @@ namespace INO_CRM_WEB_APP.Controllers
             return users;
         }
 
+        public async Task<List<UserModel>> GetUsersByDate(int id, DateTime minDate, DateTime maxDate)
+        {
+            List<UserModel> users = new List<UserModel>();
+            HttpResponseMessage response;
+            string sMaxDate = maxDate.ToShortDateString();
+            string sMinDate = minDate.ToShortDateString();
+
+            response = await ApiHelper.GetAsync("api/users/page/" + id + "?sMinDate=" + sMinDate + "&sMaxDate=" + sMaxDate, HttpContext.Session.GetString("token"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                string userResponse = response.Content.ReadAsStringAsync().Result;
+                users = JsonConvert.DeserializeObject<List<UserModel>>(userResponse);
+            }
+
+            return users;
+        }
+
+
+
         public async Task<IActionResult> Index()
         {           
             List<UserModel> users = await GetUsersAsync(paginated:false); 
             return View(users);
         }
 
-        public async Task<IActionResult> Page(int id, string searchName)
+        public async Task<IActionResult> Page(int id, DateTime minDate, DateTime maxDate)
         {
             List<UserModel> users;
-            if (searchName == null){
-                users = await GetUsersAsync(true, id);
-                ViewBag.currentPage = id;
-            }
-            else
-            {
-                users = await GetUsersByName(searchName);
-                ViewBag.currentPage = 1;
-            }
+            //if (minDate == null && maxDate == null){
+              //  users = await GetUsersAsync(true, id);
+                //ViewBag.currentPage = id;
+            //}
+            //else
+            //{
+                if (minDate == DateTime.Parse("01-01-0001")) minDate = DateTime.Parse("01-01-1900");
+                if (maxDate == DateTime.Parse("01-01-0001")) maxDate = DateTime.Today;
+                users = await GetUsersByDate(id, minDate, maxDate);                
+                ViewBag.minDate = minDate.ToString("yyyy-MM-dd");
+                ViewBag.maxDate = maxDate.ToString("yyyy-MM-dd");
             
+            //}
 
-            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/pages", HttpContext.Session.GetString("token"));
+
+            string sMaxDate = maxDate.ToShortDateString();
+            string sMinDate = minDate.ToShortDateString();
+
+            HttpResponseMessage responseMessage = await ApiHelper.GetAsync("api/users/pages/?sMinDate=" + sMinDate + "&sMaxDate=" + sMaxDate, HttpContext.Session.GetString("token"));
             if (responseMessage.IsSuccessStatusCode)
             {
                 string userResponse = responseMessage.Content.ReadAsStringAsync().Result;
                 int pageCount = int.Parse(userResponse);
+                if(id > pageCount)
+                {
+                    ViewBag.currentPage = 1;
+                }
+                else
+                {
+                    ViewBag.currentPage = id;
+                }
                 ViewBag.pageCount = pageCount;
             }
 
