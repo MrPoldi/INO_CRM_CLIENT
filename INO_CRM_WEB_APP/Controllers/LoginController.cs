@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using INO_CRM_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using INO_CRM_WEB_APP.Helpers;
 
 namespace INO_CRM_WEB_APP.Controllers
 {
@@ -26,6 +27,8 @@ namespace INO_CRM_WEB_APP.Controllers
             string token = "";            
             string apiUrl = "http://localhost:50060/";
             HttpClient client = new HttpClient();
+
+            user.Password = EncryptionHelper.GetMd5Hash(user.Password);
 
             client.BaseAddress = new Uri(apiUrl);
             client.DefaultRequestHeaders.Clear();

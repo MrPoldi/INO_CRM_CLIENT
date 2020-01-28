@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using INO_CRM_API.Models;
+using INO_CRM_WEB_APP.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,9 @@ namespace INO_CRM_WEB_APP.Controllers
         }
 
         public async Task<IActionResult> Register(UserModel user)
-        {            
+        {
+            user.Password = EncryptionHelper.GetMd5Hash(user.Password);
+
             string apiUrl = "http://localhost:50060/";
             HttpClient client = new HttpClient();
 

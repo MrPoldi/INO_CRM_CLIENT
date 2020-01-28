@@ -162,6 +162,7 @@ namespace INO_CRM_WEB_APP.Controllers
         public async Task<ActionResult> EditUser(int id, UserModel user)
         {
             user.UserId = id;
+            user.Password = EncryptionHelper.GetMd5Hash(user.Password);
             try
             {
                 HttpResponseMessage responseMessage = await ApiHelper.PutAsync("api/users/" + id, user, HttpContext.Session.GetString("token"));
