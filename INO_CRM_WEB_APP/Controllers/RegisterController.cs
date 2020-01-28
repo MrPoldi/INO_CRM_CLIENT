@@ -18,10 +18,26 @@ namespace INO_CRM_WEB_APP.Controllers
         public ActionResult Index()
         {
             return View();
-        }
+        }        
 
         public async Task<IActionResult> Register(UserModel user)
         {
+            bool valid;
+            if(user.FirstName == null || user.LastName == null || user.Login == null 
+               || user.Password == null || user.dateOfBirth == null)
+            {
+                valid = false;
+            }
+            else
+            {
+                valid = true;
+            }
+            if (!valid)
+            {
+                ViewBag.validError = "All fields must be filled";
+                return View("Index");
+            }
+
             user.Password = EncryptionHelper.GetMd5Hash(user.Password);
 
             string apiUrl = "http://localhost:50060/";

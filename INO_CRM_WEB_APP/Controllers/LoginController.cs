@@ -24,6 +24,12 @@ namespace INO_CRM_WEB_APP.Controllers
         
         public async Task<IActionResult> Login(UserModel user)
         {
+            if(user.Login == null || user.Password == null)
+            {
+                ViewBag.validError = "All fileds must be filled";
+                return View("Index");
+            }
+            
             string token = "";            
             string apiUrl = "http://localhost:50060/";
             HttpClient client = new HttpClient();
