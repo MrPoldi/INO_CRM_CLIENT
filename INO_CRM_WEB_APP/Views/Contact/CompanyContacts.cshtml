@@ -16,8 +16,11 @@
     </p>
 </form>
 
-<p>
-    <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
+<p>    
+    @if (role == "Admin" || role == "Moderator")
+    {
+        <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
+    }    
 </p>
 <table class="table">
     <thead>

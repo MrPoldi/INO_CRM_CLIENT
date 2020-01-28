@@ -10,8 +10,10 @@
 <h1>Trade notes</h1>
 
 <p>
-    <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
-
+    @if (role == "Admin" || role == "Moderator")
+    {
+        <a asp-action="Create" asp-route-companyId="@ViewBag.companyId">Create New</a>
+    }
 </p>
 <table class="table">
     <thead>

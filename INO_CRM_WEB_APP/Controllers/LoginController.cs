@@ -61,5 +61,12 @@ namespace INO_CRM_WEB_APP.Controllers
                 return View("Index");
             }
         }
+
+        public ActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
